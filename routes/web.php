@@ -16,3 +16,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/ganjil/{number}', function ($number) {
+	if($number % 2 != 0){
+		return "ya, ini bilangan ganjil";
+	} else {
+		return "tidak, ini bukan bilangan ganjil";
+	}
+});
+
+Route::resource('newposts', App\Http\Controllers\NewPostController::class);
