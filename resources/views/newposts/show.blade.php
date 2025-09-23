@@ -9,15 +9,15 @@
     <h1>Detail Post</h1>
 
     <div>
-        <p><strong>ID:</strong> {{ $newpost->id }}</p>
-        <p><strong>Title:</strong> {{ $newpost->title }}</p>
+        <p><strong>ID:</strong> {{ $newposts->id }}</p>
+        <p><strong>Title:</strong> {{ $newposts->title }}</p>
         <p><strong>Content:</strong></p>
-        <p>{{ $newpost->content }}</p>
+        <p>{{ $newposts->content }}</p>
     </div>
 
     <div>
         <a href="{{ route('newposts.index') }}">Kembali</a> |
-        <a href="{{ route('newposts.edit', $newpost->id) }}">Edit Post</a>
+        <a href="{{ route('newposts.edit', $newposts->id) }}">Edit Post</a>
     </div>
 </body>
 </html>

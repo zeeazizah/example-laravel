@@ -28,7 +28,7 @@
             <tr>
                 <td></td>
                 <td>
-                    <button type="submit">Update</button>
+                    <button type="submit" onclick="return alert('Data Berhasil Diubah')" >Update</button>
                     <a href="{{ route('newposts.index') }}">Batal</a>
                 </td>
             </tr>

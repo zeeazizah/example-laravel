@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\new_posts;
+use App\Models\newpost;
 use Illuminate\Http\Request;
 
 class NewPostController extends Controller
@@ -14,9 +14,11 @@ class NewPostController extends Controller
      */
     public function index()
     {
-        $newposts = new_posts::all();
-		return view('newposts.index',compact('newposts'));
+        $newposts = newpost::all();
+		return view('newposts.index', ['newposts' => $newposts]);
     }
+
+	// ('newposts.index', ['newPosts' => $newPosts]);
 
     /**
      * Show the form for creating a new resource.
@@ -39,11 +41,11 @@ class NewPostController extends Controller
         // new_posts::create($request->only(['title','content']));
 		// return redirect()->route('newposts.index')->with('success', 'New post created successfully.');
 
-		$newpost = new_posts::create([
+		$newpost = newpost::create([
 			'title' => $request->title,
 			'content' => $request->content
 		]);
-		// dd($post);
+		// dd($newpost);
 		return redirect()->route('newposts.index')->with('success', 'New post created successfully.');
     }
 
@@ -53,9 +55,9 @@ class NewPostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(new_posts $newpost)
+    public function show(newpost $newpost)
     {
-        return view('newposts.show', compact('newpost'));
+        return view('newposts.show', ['newposts' => $newpost]);
     }
 
     /**
@@ -64,7 +66,7 @@ class NewPostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(new_posts $newpost)
+    public function edit(newpost $newpost)
     {
 	     return view('newposts.edit', compact('newpost'));
 
@@ -77,7 +79,7 @@ class NewPostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, new_posts $newpost)
+    public function update(Request $request, newpost $newpost)
     {
         $newpost->update($request->only(['title','content']));
 		return redirect()->route('newposts.index')->with('success', 'New post updated successfully.');
@@ -89,7 +91,7 @@ class NewPostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(new_posts $newpost)
+    public function destroy(newpost $newpost)
     {
         $newpost->delete();
 		return redirect()->route('newposts.index')->with('success', 'New post deleted successfully.');

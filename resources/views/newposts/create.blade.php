@@ -27,7 +27,7 @@
 
         <!-- Tombol Submit -->
         <div>
-            <button type="submit">Simpan</button>
+            <button type="submit" onclick="alert('Data Berhasil Ditambah')">Simpan</button>
 			<a href="{{ route('newposts.index') }}">Batal</a>
         </div>
     </form>
