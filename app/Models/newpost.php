@@ -9,7 +9,7 @@ class newpost extends Model
 {
     use HasFactory;
 
-	protected $table = 'newpost';
+	protected $table = 'newposts';
 
 	protected $fillable = [
 		'title',
