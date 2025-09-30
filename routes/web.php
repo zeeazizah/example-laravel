@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfilController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,9 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::resource('posts', App\Http\Controllers\PostController::class);
 Route::get('/ganjil/{number}', function ($number) {
@@ -27,3 +26,6 @@ Route::get('/ganjil/{number}', function ($number) {
 });
 
 Route::resource('newposts', App\Http\Controllers\NewPostController::class);
+
+Route::resource('users', App\Http\Controllers\UserController::class);
+
