@@ -45,7 +45,7 @@ class UserController extends Controller
 		],[
 			// custom message
 			'photo.image' => 'Dokumen seharusnya berupa gambar.',
-			'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg, gif.',
+			'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg.',
 			'photo.max' => 'ukuran gambar maksimal 2 MB.',
 		]);
 		$photoName = null;
@@ -98,11 +98,10 @@ class UserController extends Controller
 			'email' => 'required|email|unique:users,email,' . $user->id,
 			'password' => 'nullable|string|min:4',
 			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
-
+		],[
 		// custom message
 		'photo.image' => 'Dokumen seharusnya berupa gambar.',
-		'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg, gif.',
+		'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg',
 		'photo.max' => 'ukuran gambar maksimal 2 MB.',
 		]);
 
