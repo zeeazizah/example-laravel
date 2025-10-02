@@ -30,6 +30,11 @@
 									class="form-control"
 									placeholder="Masukkan nama"
 									required>
+								@error('name')
+									<div class="text-danger mt-1">
+										{{ $message }}
+									</div>
+								@enderror
 							</div>
 
 							<div class="mb-3">
@@ -44,7 +49,7 @@
 									required>
 								@error('username')
 									<div class="text-danger mt-1">
-										{{ 'Username telah digunakan sebelumnya' }}
+										{{ $message }}
 									</div>
 								@enderror
 							</div>
@@ -55,12 +60,13 @@
 									type="email"
 									id="email"
 									name="email"
-									class="form-control"
+									class="form-control @error('email') is-invalid @enderror"
+									value="{{ old('email') }}"
 									placeholder="Masukkan Email"
 									required>
-								@error('username')
+								@error('email')
 									<div class="text-danger mt-1">
-										{{ 'Email tidak valid' }}
+										{{ $message}}
 									</div>
 								@enderror
 							</div>
@@ -76,7 +82,7 @@
 									required>
 								@error('password')
 									<div class="text-danger mt-1">
-										{{ 'Password minimal 4 karakter' }}
+										{{ $message }}
 									</div>
 								@enderror
 							</div>

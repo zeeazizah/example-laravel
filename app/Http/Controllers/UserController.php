@@ -40,10 +40,28 @@ class UserController extends Controller
 			'username' => 'required|string|unique:users,username',
 			'name' => 'required|string |max:255',
 			'email' => 'required|email|unique:users,email',
-			'password' => 'nullable|string|min:4|',
+			'password' => 'nullable|min:4|',
 			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 		],[
-			// custom message
+			// custom message username
+			'username.required' => 'Username harus diisi.',
+			'username.string' => 'Username harus berupa kata.',
+			'username.unique' => 'Username sudah terdaftar.',
+
+			// custom message name
+			'name.required' => 'Nama harus diisi.',
+			'name.string' => 'Nama harus berupa kata.',
+			'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+
+			// custom message email
+			'email.required' => 'Email harus diisi.',
+			'email.email' => 'Email harus berupa alamat email yang valid.',
+			'email.unique' => 'Email sudah terdaftar.',
+
+			// custom message password
+			'password.min' => 'Password minimal 4 karakter.',
+
+			// custom message photo
 			'photo.image' => 'Dokumen seharusnya berupa gambar.',
 			'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg.',
 			'photo.max' => 'ukuran gambar maksimal 2 MB.',
@@ -72,7 +90,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+		return view('user.show', compact('user'));
     }
 
     /**
@@ -96,10 +114,24 @@ class UserController extends Controller
 		$validated = $request->validate([
 			'name' => 'required|string|max:255',
 			'email' => 'required|email|unique:users,email,' . $user->id,
-			'password' => 'nullable|string|min:4',
+			'password' => 'nullable|min:4',
 			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 		],[
-		// custom message
+
+		// custom message name
+		'name.required' => 'Nama harus diisi.',
+		'name.string' => 'Nama harus berupa kata.',
+		'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+
+		// custom message email
+		'email.required' => 'Email harus diisi.',
+		'email.email' => 'Email harus berupa alamat email yang valid.',
+		'email.unique' => 'Email sudah terdaftar.',
+
+		// custom message password
+		'password.min' => 'Password minimal 4 karakter.',
+
+		// custom message photo
 		'photo.image' => 'Dokumen seharusnya berupa gambar.',
 		'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg',
 		'photo.max' => 'ukuran gambar maksimal 2 MB.',

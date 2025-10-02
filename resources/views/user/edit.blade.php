@@ -30,6 +30,9 @@
                                 value="{{ old('name', $user->name) }}"
                                 placeholder="Masukkan nama"
                                 required>
+							@error('name')
+								<div class="text-danger mt-1">{{ $message }}</div>
+							@enderror
                         </div>
 
                         <!-- Username -->

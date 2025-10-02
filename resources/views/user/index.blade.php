@@ -60,6 +60,11 @@
 
 
                         <td class="text-start">
+							<!-- Tombol Detail -->
+							<a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm me-1">
+								Detail
+							</a>
+
                             <!-- Tombol Edit -->
                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm me-1">
                                 Edit
