@@ -112,11 +112,16 @@ class UserController extends Controller
 	{
 
 		$validated = $request->validate([
+			'username' => 'required|string|unique:users,username,' . $user->id,
 			'name' => 'required|string|max:255',
 			'email' => 'required|email|unique:users,email,' . $user->id,
 			'password' => 'nullable|min:4',
-			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
 		],[
+		// custom message username
+		'username.required' => 'Username harus diisi.',
+		'username.string' => 'Username harus berupa kata.',
+		'username.unique' => 'Username sudah terdaftar.',
 
 		// custom message name
 		'name.required' => 'Nama harus diisi.',
