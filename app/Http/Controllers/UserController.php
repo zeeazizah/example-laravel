@@ -143,15 +143,20 @@ class UserController extends Controller
 		]);
 
 		if ($request->hasFile('photo')) {
-			$oldImage = public_path('photos/' . $user->photo);
-			if(file_exists($oldImage)) {
-				unlink($oldImage);
-			}
-			$photoName = time() . '.' . $request->photo->extension();
-			$request->photo->move(public_path('photos'), $photoName);
-			$user->photo = $photoName;
+			if (!empty($user->photo)) { // hanya hapus kalau memang ada foto lama
+				$oldImage = public_path('photos/' . $user->photo);
+				if (file_exists($oldImage)) {
+					unlink($oldImage);
+				}
+    		}
+
+    $photoName = time() . '.' . $request->photo->extension();
+    $request->photo->move(public_path('photos'), $photoName);
+    $user->photo = $photoName;
 		}
 
+
+		$user->username = $validated['username'];
 		$user->name = $validated['name'];
 		$user->email = $validated['email'];
 
