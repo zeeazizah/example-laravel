@@ -15,23 +15,29 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-			$table->foreignId('user_id')->nullable();
-			$table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-			$table->string('title',255); //varcha
+
+			// relasi ke tabel users
+			$table->foreignId('user_id')
+			->nullable()
+			->constrained('users')
+			->nullOnDelete();
+
+			// Konten Utama Post
+			$table->string('title',255); //varchar
 			$table->text('content'); //text
-			$table->date('published_at'); //date
-			$table->boolean('is_active')->default(true); //boolean
-			$table->text('image')->nullable(); //text
+			$table->date('publish_date')->nullable();
+			$table->boolean('is_publish')->default(false); //post tidak langsung di publish
+			$table->string('image')->nullable(); //string
+
+			// Default Created & Updated
             $table->timestamps();
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('posts');
     }

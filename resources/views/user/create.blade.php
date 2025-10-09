@@ -20,6 +20,20 @@
 						<form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
 							@csrf
 
+							<!-- Field Role -->
+							<div class="mb-3">
+								<label for="role" class="form-label">Role</label>
+								<select class="form-select" id="role" name="role" required>
+									<option value="1" {{ old('role') == 1 ? 'selected' : '' }}>Admin</option>
+									<option value="2" {{ old('role') == 2 ? 'selected' : '' }}>User</option>
+								</select>
+								@error('role')
+									<div class="text-danger mt-1">
+										{{ $message }}
+									</div>
+								@enderror
+							</div>
+
 							<!-- Field Judul -->
 							<div class="mb-3">
 								<label for="user" class="form-label">Name</label>
@@ -28,6 +42,7 @@
 									id="name"
 									name="name"
 									class="form-control"
+									value="{{ old('name') }}"
 									placeholder="Masukkan nama"
 									required>
 								@error('name')

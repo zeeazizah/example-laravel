@@ -37,18 +37,23 @@ class UserController extends Controller
 
 		//validasi
 		$validated = $request->validate([
+			'role' => 'required|string|in:1,2',
 			'username' => 'required|string|unique:users,username',
 			'name' => 'required|string |max:255',
 			'email' => 'required|email|unique:users,email',
 			'password' => 'nullable|min:4|',
 			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 		],[
+
+			//custom message role
+			'role.required' => 'Role harus diisi.',
+
 			// custom message username
 			'username.required' => 'Username harus diisi.',
 			'username.string' => 'Username harus berupa kata.',
 			'username.unique' => 'Username sudah terdaftar.',
 
-			// custom message name
+				// custom message name
 			'name.required' => 'Nama harus diisi.',
 			'name.string' => 'Nama harus berupa kata.',
 			'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
@@ -73,6 +78,7 @@ class UserController extends Controller
 		}
 		//store
 		$users = User::create([
+			'role' => $validated['role'],
 			'username' => $validated['username'],
 			'name' => $validated['name'],
 			'email' => $validated['email'],
@@ -107,67 +113,77 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
-		//route menggunakan model binding
-	{
+		public function update(Request $request, User $user)
+			//route menggunakan model binding
+		{
 
-		$validated = $request->validate([
-			'username' => 'required|string|unique:users,username,' . $user->id,
-			'name' => 'required|string|max:255',
-			'email' => 'required|email|unique:users,email,' . $user->id,
-			'password' => 'nullable|min:4',
-			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-		],[
-		// custom message username
-		'username.required' => 'Username harus diisi.',
-		'username.string' => 'Username harus berupa kata.',
-		'username.unique' => 'Username sudah terdaftar.',
+			$validated = $request->validate([
+				'role' => 'required|string|in:1,2',
+				'username' => 'required|string|unique:users,username,' . $user->id,
+				'name' => 'required|string|max:255',
+				'email' => 'required|email|unique:users,email,' . $user->id,
+				'password' => 'nullable|min:4',
+				'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+			],[
 
-		// custom message name
-		'name.required' => 'Nama harus diisi.',
-		'name.string' => 'Nama harus berupa kata.',
-		'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+			//custom message role
+			'role.required' => 'Role harus diisi.',
 
-		// custom message email
-		'email.required' => 'Email harus diisi.',
-		'email.email' => 'Email harus berupa alamat email yang valid.',
-		'email.unique' => 'Email sudah terdaftar.',
+			// custom message username
+			'username.required' => 'Username harus diisi.',
+			'username.string' => 'Username harus berupa kata.',
+			'username.unique' => 'Username sudah terdaftar.',
 
-		// custom message password
-		'password.min' => 'Password minimal 4 karakter.',
+			// custom message name
+			'name.required' => 'Nama harus diisi.',
+			'name.string' => 'Nama harus berupa kata.',
+			'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
 
-		// custom message photo
-		'photo.image' => 'Dokumen seharusnya berupa gambar.',
-		'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg',
-		'photo.max' => 'ukuran gambar maksimal 2 MB.',
-		]);
+			// custom message email
+			'email.required' => 'Email harus diisi.',
+			'email.email' => 'Email harus berupa alamat email yang valid.',
+			'email.unique' => 'Email sudah terdaftar.',
 
-		if ($request->hasFile('photo')) {
-			if (!empty($user->photo)) { // hanya hapus kalau memang ada foto lama
-				$oldImage = public_path('photos/' . $user->photo);
-				if (file_exists($oldImage)) {
-					unlink($oldImage);
+			// custom message password
+			'password.min' => 'Password minimal 4 karakter.',
+
+			// custom message photo
+			'photo.image' => 'Dokumen seharusnya berupa gambar.',
+			'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg',
+			'photo.max' => 'ukuran gambar maksimal 2 MB.',
+			]);
+
+			if ($request->hasFile('photo')) {
+				// Hapus foto lama jika ada
+				if (!empty($user->photo)) {
+					$oldImage = public_path('photos/' . $user->photo);
+					if (file_exists($oldImage)) {
+						unlink($oldImage);
+					}
 				}
-    		}
 
-    $photoName = time() . '.' . $request->photo->extension();
-    $request->photo->move(public_path('photos'), $photoName);
-    $user->photo = $photoName;
+				// Simpan foto baru
+				$photoName = time() . '.' . $request->photo->extension();
+				$request->photo->move(public_path('photos'), $photoName);
+
+				// Update kolom photo
+				$user->photo = $photoName;
+			}
+
+			//update
+			$user->role = $validated['role'];
+			$user->username = $validated['username'];
+			$user->name = $validated['name'];
+			$user->email = $validated['email'];
+
+			if (!empty($validated['password'])) {
+				$user->password = bcrypt($validated['password']);
+			}
+
+			$user->save();
+
+			return redirect()->route('users.index')->with('success', 'Data user berhasil diupdate');
 		}
-
-
-		$user->username = $validated['username'];
-		$user->name = $validated['name'];
-		$user->email = $validated['email'];
-
-		if (!empty($validated['password'])) {
-			$user->password = bcrypt($validated['password']);
-		}
-
-		$user->save();
-
-		return redirect()->route('users.index')->with('success', 'Data user berhasil diupdate');
-	}
 
 
     /**

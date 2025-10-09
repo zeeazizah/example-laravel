@@ -2,33 +2,32 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    // Konstanta Role
+    const ADMIN = 1;
+    const USER  = 2;
+
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * Kolom yang bisa diisi mass-assignment
      */
     protected $fillable = [
-		'username',
+        'username',
         'name',
         'email',
         'password',
-		'photo',
-    ]; //fungsinya buat nama nama kolom tabel users
+        'photo',
+        'role',
+    ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Kolom yang disembunyikan ketika serialisasi (misalnya ke JSON)
      */
     protected $hidden = [
         'password',
@@ -36,9 +35,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Casting kolom
      */
     protected function casts(): array
     {
@@ -46,5 +43,32 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+	
+
+    /**
+     * Cek role
+     */
+    public function hasRole($role): bool
+    {
+        return $this->role == $role;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === self::ADMIN;
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === self::USER;
+    }
+
+    /**
+     * Relasi ke posts (1 user punya banyak post)
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
     }
 }

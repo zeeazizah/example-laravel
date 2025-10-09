@@ -10,7 +10,12 @@
 
     <ul class="navbar-nav flex-row ms-auto">
         <li class="nav-item text-nowrap">
-            <a class="nav-link px-3" href="#">Sign out</a>
-        </li>
+            <!-- <a class="nav-link px-3" href="#">Sign out</a> -->
+	<form method="POST" action="{{ route('logout') }}">
+		@csrf
+		<a class="nav-link px-3" href="#" onclick="event.preventDefault();
+			this.closest('form').submit();"></a>
+	</form>
+		</li>
     </ul>
 </header>
