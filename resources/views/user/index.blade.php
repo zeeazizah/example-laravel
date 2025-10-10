@@ -26,7 +26,7 @@
 
    <div class="mb-3 d-flex justify-content-between align-items-center">
         <h4 class="mb-0">Daftar User</h4>
-        <a href="{{ route('users.create') }}" class="btn btn-primary">
+        <a href="{{ route('users.create') }}" class="btn btn-primary bi bi-plus">
             Tambah User Baru
         </a>
     </div>
@@ -68,14 +68,12 @@
 								@endif
 							</td>
 							<td class="text-start">
-								<a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm me-1">Detail</a>
-								<a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm me-1">Edit</a>
+								<a href="{{ route('users.show', $user->id) }}" class="btn btn-info btn-sm me-1 bi bi-eye"></a>
+								<a href="{{ route('users.edit', $user->id) }}" class="btn btn-warning btn-sm me-1 bi bi-pencil-square"></a>
 								<form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
 									@csrf
 									@method('DELETE')
-									<button type="submit" onclick="return confirm('Yakin ingin hapus?')" class="btn btn-danger btn-sm">
-										Hapus
-									</button>
+									<button type="submit" onclick="return confirm('Yakin ingin hapus?')" class="btn btn-danger btn-sm bi bi-trash"></button>
 								</form>
 							</td>
 						</tr>

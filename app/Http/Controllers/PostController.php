@@ -26,22 +26,20 @@ class PostController extends Controller
             ->where('is_publish', true);
     }
 
-	// Fitur pencarian
-	if ($request->filled('search')) {
+	$query->when($request->filled('search'), function ($q) use ($request) {
 		$search = $request->search;
-		$query->where(function ($title) use ($search) {
-			$title->where('title', 'like', "%{$search}%")
-			->orWhere('content', 'like', "%{$search}%")
-			->orWhereHas('user', function ($user) use ($search) {
-				$user->where('name', 'like', "%{$search}%");
-			});
+
+		$q->where(function ($query) use ($search) {
+			$query->where('title', 'like', "%{$search}%")
+				->orWhereHas('user', function ($user) use ($search) {
+					$user->where('name', 'like', "%{$search}%");
+				});
 		});
-	}
+	});
 
     // Pagination (admin & user: 10, guest: 9)
     $perPage = (Auth::check() && Auth::user()->role == 1) || (Auth::check())
         ? 10 : 9;
-
     $posts = $query->latest()->paginate($perPage);
 
     return view('posts.index', [
@@ -90,7 +88,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         // Hanya admin atau pemilik yang boleh akses jika post masih draft
-        if (!$post->is_publish && (!Auth::check() || (Auth::id() !== $post->user_id && Auth::user()->role != 1))) {
+        if (!$post->is_publish && ((Auth::id() !== $post->user_id && Auth::user()->role != 1))) {
             abort(403, 'Anda tidak memiliki akses untuk melihat post ini.');
         }
 
@@ -173,21 +171,24 @@ class PostController extends Controller
 	{
 		$query = Post::with('user')->where('is_publish', true);
 
-		// 🔍 Fitur Pencarian
-		if ($request->filled('search')) {
+		//Fitur Pencarian diselaraskan dengan index()
+		$query->when($request->filled('search'), function ($q) use ($request) {
 			$search = $request->search;
-			$query->where(function ($q) use ($search) {
-				$q->where('title', 'like', "%{$search}%")
-				->orWhere('content', 'like', "%{$search}%")
-				->orWhereHas('user', function ($u) use ($search) {
-					$u->where('name', 'like', "%{$search}%");
-				});
+
+			$q->where(function ($query) use ($search) {
+				$query->where('title', 'like', "%{$search}%")
+					->orWhereHas('user', function ($user) use ($search) {
+						$user->where('name', 'like', "%{$search}%");
+					});
 			});
-		}
+		});
 
 		$posts = $query->latest()->paginate(10);
 
-		return view('public.posts.index', compact('posts'));
+		return view('public.posts.index', [
+			'posts'  => $posts,
+			'search' => $request->search, // agar input pencarian tetap muncul di form
+		]);
 	}
 
     public function publicShow($id)
