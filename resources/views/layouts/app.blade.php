@@ -109,7 +109,7 @@
 
 						<li class="nav-item mb-1">
 							@auth
-								<a class="nav-link d-flex align-items-center {{ request()->routeIs('profile') ? 'active fw-semibold text-primary' : 'text-dark' }}"
+								<a class="nav-link d-flex align-items-center {{ request()->routeIs('profile.*') ? 'active fw-semibold text-primary' : 'text-dark' }}"
 								href="{{ route('profile.edit') }}">
 									<i class="bi bi-person me-2"></i> Profile
 								</a>

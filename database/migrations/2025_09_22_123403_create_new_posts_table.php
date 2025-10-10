@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('examples', function (Blueprint $table) {
-            $table->id();
-            $table->string('title', 255);
-			$table->text('content');
-		    $table->timestamp('created_at')->useCurrent();
-    		$table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-        });
+        // Schema::create('examples', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('title', 255);
+		// 	$table->text('content');
+		//     $table->timestamp('created_at')->useCurrent();
+    	// 	$table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+        // });
     }
 
     /**

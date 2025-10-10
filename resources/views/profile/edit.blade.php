@@ -2,6 +2,8 @@
 
 @section('title', 'Edit Profile')
 
+@section('header-title', 'Edit Profile')
+
 @section('content')
 <div class="container-fluid">
     <div class="row">

@@ -50,11 +50,7 @@ Route::group([
 	], function () {
 		Route::resource('users', App\Http\Controllers\UserController::class);
 	});
-});
-
-// Halaman User yang telah login yang dapat mengakses halaman post (private)
-Route::middleware('auth')->group(function () {
-    Route::resource('/posts', App\Http\Controllers\PostController::class);
+	Route::resource('/posts', App\Http\Controllers\PostController::class);
 });
 
 // Halaman Post yang dapat diakses di Publik

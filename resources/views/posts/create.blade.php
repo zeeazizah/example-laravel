@@ -1,138 +1,104 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Profile')
+@section('title', 'Buat Post Baru')
+@section('header-title', 'Buat Post Baru')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-
-            {{-- Update Profile --}}
-            <div class="card mb-4 shadow-sm border-0">
-                <div class="card-header bg-primary text-white fw-bold">
-                    Update Profile
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Form Buat Post Baru</h5>
+                    <a href="{{ route('posts.index') }}" class="btn btn-light btn-sm text-primary">
+                        <i class="bi bi-arrow-left-circle me-1"></i> Kembali
+                    </a>
                 </div>
+
                 <div class="card-body">
-                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                    {{-- Flash Message --}}
+                    @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    @endif
+
+                    {{-- Form --}}
+                    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        @method('PATCH')
 
+                        {{-- Judul --}}
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nama</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                id="name" name="name" value="{{ old('name', $user->name) }}">
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <label for="title" class="form-label">Judul</label>
+                            <input type="text"
+                                   class="form-control @error('title') is-invalid @enderror"
+                                   id="title"
+                                   name="title"
+                                   value="{{ old('title') }}"
+                                   placeholder="Masukkan judul postingan..."
+                                   required>
+                            @error('title')
+                                <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
+                        {{-- Tanggal Publish --}}
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control @error('username') is-invalid @enderror"
-                                id="username" name="username" value="{{ old('username', $user->username) }}">
-                            @error('username')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <label for="publish_date" class="form-label">Tanggal Publish</label>
+                            <input type="date"
+                                   class="form-control @error('publish_date') is-invalid @enderror"
+                                   id="publish_date"
+                                   name="publish_date"
+                                   value="{{ old('publish_date', now()->format('Y-m-d')) }}"
+                                   required>
+                            @error('publish_date')
+                                <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
+                        {{-- Konten --}}
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                id="email" name="email" value="{{ old('email', $user->email) }}">
-                            @error('email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <label for="content" class="form-label">Konten</label>
+                            <textarea class="form-control @error('content') is-invalid @enderror"
+                                      id="content"
+                                      name="content"
+                                      rows="7"
+                                      placeholder="Tulis konten di sini..."
+                                      required>{{ old('content') }}</textarea>
+                            @error('content')
+                                <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        {{-- Upload Foto --}}
+                        {{-- Gambar --}}
                         <div class="mb-3">
-                            <label for="photo" class="form-label">Foto Profil</label>
-                            <input type="file" class="form-control @error('photo') is-invalid @enderror"
-                                id="photo" name="photo">
-                            @error('photo')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <label for="image" class="form-label">Gambar (Opsional)</label>
+                            <input type="file"
+                                   class="form-control @error('image') is-invalid @enderror"
+                                   id="image"
+                                   name="image"
+                                   accept="image/*">
+                            @error('image')
+                                <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
-
-                            @if($user->photo)
-                                <div class="mt-2">
-                                    <img src="{{ asset('photos/'.$user->photo) }}"
-                                        alt="Profile Photo" width="80" class="rounded-circle border">
-                                </div>
-                            @endif
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        {{-- Tombol --}}
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="{{ route('posts.index') }}" class="btn btn-secondary">
+                                Batal
+                            </a>
+                            <button type="submit" name="action" value="draft" class="btn btn-outline-primary">
+                                Simpan Draft
+                            </button>
+                            <button type="submit" name="action" value="publish" class="btn btn-primary">
+                                Publish Sekarang
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
-
-            {{-- Update Password --}}
-            <div class="card mb-4 shadow-sm border-0">
-                <div class="card-header bg-warning text-dark fw-bold">
-                    Update Password
-                </div>
-                <div class="card-body">
-                    <form method="POST" action="{{ route('password.update') }}">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-3">
-                            <label for="current_password" class="form-label">Password Saat Ini</label>
-                            <input type="password" class="form-control @error('current_password') is-invalid @enderror"
-                                id="current_password" name="current_password">
-                            @error('current_password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password Baru</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                id="password" name="password">
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password_confirmation" class="form-label">Konfirmasi Password Baru</label>
-                            <input type="password" class="form-control"
-                                id="password_confirmation" name="password_confirmation">
-                        </div>
-
-                        <button type="submit" class="btn btn-warning text-dark">Update Password</button>
-                    </form>
-                </div>
-            </div>
-
-            {{-- Delete Account --}}
-            <div class="card mb-4 shadow-sm border-0">
-                <div class="card-header bg-danger text-white fw-bold">
-                    Hapus Akun
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">Akun yang dihapus tidak bisa dikembalikan. Harap konfirmasi password Anda sebelum melanjutkan.</p>
-                    <form method="POST" action="{{ route('profile.destroy') }}">
-                        @csrf
-                        @method('DELETE')
-
-                        <div class="mb-3">
-                            <label for="password_delete" class="form-label">Password</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                id="password_delete" name="password">
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <button type="submit" class="btn btn-danger"
-                            onclick="return confirm('Apakah Anda yakin ingin menghapus akun ini?')">
-                            Hapus Akun
-                        </button>
-                    </form>
-                </div>
-            </div>
-
         </div>
     </div>
 </div>
