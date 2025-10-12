@@ -118,7 +118,7 @@ class PostController extends Controller
         }
 
         return view('posts.show', [
-			'posts' => $post,
+			'post' => $post,
 		]);
     }
 
@@ -130,7 +130,7 @@ class PostController extends Controller
         }
 
         return view('posts.edit', [
-			'posts' => $post,
+			'post' => $post,
 		]);
     }
 
@@ -145,7 +145,7 @@ class PostController extends Controller
 		'title'        => 'required|string|max:255',
 		'content'      => 'required|string',
 		'publish_date' => 'required|date',
-		'image'        => 'required|image|mimes:jpg,jpeg,png|max:2048',
+		'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
 		], [
 			// Judul
 			'title.required' => 'Judul post wajib diisi.',
@@ -161,7 +161,6 @@ class PostController extends Controller
 			'publish_date.date'     => 'Tanggal publish harus berupa format tanggal yang valid.',
 
 			// Gambar
-			'image.required' => 'Gambar post wajib diunggah.',
 			'image.image'    => 'File yang diunggah harus berupa gambar.',
 			'image.mimes'    => 'Format gambar harus jpg, jpeg, atau png.',
 			'image.max'      => 'Ukuran gambar tidak boleh lebih dari 2MB.',
