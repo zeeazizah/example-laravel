@@ -6,10 +6,10 @@
 	<title>@yield('title', 'Admin Panel')</title>
 
 	<!-- Bootstrap core CSS -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
 	<!-- Bootstrap Icons -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+	<link href="{{ asset('bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
 
 	@stack('styles')
 </head>
@@ -29,38 +29,68 @@
 
 			<div class="d-flex align-items-center">
 				@auth
-					<!-- Dropdown Profile -->
-					<div class="dropdown">
-						<a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-							id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-								@if(Auth::user()->photo)
-									<img src="{{ asset('photos/' . Auth::user()->photo) }}"
-										alt="profile" width="32" height="32"
-										class="rounded-circle me-2">
-								@else
-									<img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=0D8ABC&color=fff"
-										alt="profile" width="32" height="32"
-										class="rounded-circle me-2">
-								@endif
-						</a>
-						<ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser">
-							<li class="dropdown-header">
-								<strong>{{ Auth::user()->name }}</strong><br>
-								<small class="text-muted">
-									{{ Auth::user()->role == 1 ? 'Admin' : 'User' }}
-								</small>
-							</li>
-							<li><hr class="dropdown-divider"></li>
-							<li>
-								<form method="POST" action="{{ route('logout') }}" id="logoutForm">
-									@csrf
-									<button type="button" class="dropdown-item text-danger" onclick="confirmLogout()">
-										<i class="bi bi-box-arrow-right me-2"></i> Sign Out
-									</button>
-								</form>
-							</li>
-						</ul>
-					</div>
+				<!-- Dropdown Profile -->
+				<div class="dropdown">
+					<a href="#"
+					class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+					id="dropdownUser"
+					data-bs-toggle="dropdown"
+					aria-expanded="false">
+
+						{{-- Foto Profil --}}
+						@if(Auth::user()->photo)
+							<img src="{{ asset('photos/' . Auth::user()->photo) }}"
+								alt="profile"
+								width="36"
+								height="36"
+								class="rounded-circle me-2 border border-light">
+						@else
+							<img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=0D8ABC&color=fff"
+								alt="profile"
+								width="36"
+								height="36"
+								class="rounded-circle me-2 border border-light">
+						@endif
+
+						{{-- Nama (opsional ditampilkan di navbar) --}}
+						<span class="d-none d-sm-inline fw-semibold">{{ Auth::user()->name }}</span>
+					</a>
+
+					<ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="dropdownUser">
+						{{-- Header --}}
+						<li class="dropdown-header text-center">
+							<div class="mb-2">
+								<img src="{{ Auth::user()->photo
+									? asset('photos/' . Auth::user()->photo)
+									: 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=0D8ABC&color=fff' }}"
+									alt="profile"
+									width="50"
+									height="50"
+									class="rounded-circle border">
+							</div>
+							<strong>{{ Auth::user()->name }}</strong><br>
+							<small class="text-muted">
+								{{ Auth::user()->role == 1 ? 'Admin' : 'User' }}
+							</small>
+						</li>
+
+						<li><hr class="dropdown-divider"></li>
+
+						{{-- Logout --}}
+						<li>
+							<form method="POST" action="{{ route('logout') }}" id="logoutForm">
+								@csrf
+								<button type="button"
+										class="dropdown-item text-danger d-flex align-items-center justify-content-center"
+										onclick="confirmLogout()">
+									<i class="bi bi-box-arrow-right me-2"></i> Keluar
+								</button>
+							</form>
+						</li>
+					</ul>
+				</div>
+			</div>
+
 
 <script>
     function confirmLogout() {

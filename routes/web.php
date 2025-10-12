@@ -1,60 +1,62 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
-
-
-
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| Semua route aplikasi didefinisikan di sini.
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-// Route::resource('users', App\Http\Controllers\UserController::class);
-
-// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// ==========================================
+// Halaman Post Publik (tanpa login)
+// ==========================================
+Route::get('/', [PostController::class, 'publicPosts'])->name('posts.public');
+Route::get('/post/{id}', [PostController::class, 'publicShow'])->name('posts.public.show');
 
 
+// ==========================================
+// Dashboard (setelah login)
+// ==========================================
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
+// ==========================================
+// Manajemen Profil (wajib login)
+// ==========================================
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+	Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
+
 });
 
-require __DIR__.'/auth.php';
 
+// ==========================================
+// Admin & User (wajib login)
+// ==========================================
+Route::middleware('auth')->group(function () {
 
-Route::group([
-	'middleware' => ['auth'],
-], function () {
-	Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-	Route::group([
-		'middleware' => ['admin'],
-	], function () {
-		Route::resource('users', App\Http\Controllers\UserController::class);
-	});
-	Route::resource('/posts', App\Http\Controllers\PostController::class);
+    // Hanya admin yang bisa kelola user
+    Route::middleware('admin')->group(function () {
+        Route::resource('users', UserController::class);
+    });
+
+    // Semua user login bisa kelola post
+    Route::resource('posts', PostController::class);
 });
 
-// Halaman Post yang dapat diakses di Publik
-Route::get('/', [PostController::class, 'publicPosts'])->name('posts.public');
 
-// Halaman Detail tiap post
-Route::get('/blog/{id}', [PostController::class, 'publicShow'])->name('posts.public.show');
+// ==========================================
+// Route Autentikasi (Breeze/Fortify/Jetstream)
+// ==========================================
+require __DIR__ . '/auth.php';

@@ -5,18 +5,31 @@
 @section('content')
 <div class="container py-5">
 
-    {{-- Header --}}
+    <!-- Header -->
     <div class="text-center mb-5">
-        <h1 class="fw-bold text-primary mb-2">Selamat Datang 👋</h1>
+        <h1 class="fw-bold text-primary mb-2">
+            <!-- sambutan Berdasarkan Role -->
+            @if(Auth::user()->role == 1)
+                Selamat Datang, Admin
+            @else
+                Selamat Datang, {{ Auth::user()->name }}
+            @endif
+        </h1>
+
         <p class="text-muted fs-5">
-            Kelola <span class="fw-semibold text-dark">Postingan</span> dan, jika Anda Admin, <span class="fw-semibold text-dark">Pengguna</span> di sini.
+            @if(Auth::user()->role == 1)
+               Kelola <span class="fw-semibold text-dark">Postingan</span> dan <span class="fw-semibold text-dark">Pengguna</span> disini.
+            @else
+                Hai <span class="fw-semibold text-dark">{{ Auth::user()->name }}</span>!
+                Di sini kamu bisa membuat dan mengelola <span class="fw-semibold text-dark">Postingan</span> kamu.
+            @endif
         </p>
     </div>
 
-    {{-- Main Dashboard --}}
+    <!-- Main Dashboard -->
     <div class="row justify-content-center g-4">
 
-        {{-- Card: Post --}}
+        <!-- Card Post -->
         <div class="col-md-5">
             <div class="card shadow-lg border-0 rounded-4 h-100 hover-shadow">
                 <div class="card-body text-center py-5">
@@ -25,7 +38,7 @@
                     </div>
                     <h4 class="fw-bold mb-2">Kelola Post</h4>
                     <p class="text-muted mb-4">
-                        Buat, ubah, dan kelola semua postingan blog kamu dengan mudah.
+                        Buat, ubah, dan kelola semua  post yang terdaftar dengan mudah.
                     </p>
                     <a href="{{ route('posts.index') }}" class="btn btn-primary px-4 rounded-pill">
                         <i class="bi bi-arrow-right-circle me-1"></i> Lihat Post
@@ -34,7 +47,7 @@
             </div>
         </div>
 
-        {{-- Card: User (Hanya untuk Admin) --}}
+        <!-- Card Manajemen User (Khusus Admin) -->
         @if (Auth::user() && Auth::user()->role == 1)
         <div class="col-md-5">
             <div class="card shadow-lg border-0 rounded-4 h-100 hover-shadow">
@@ -44,7 +57,7 @@
                     </div>
                     <h4 class="fw-bold mb-2">Kelola User</h4>
                     <p class="text-muted mb-4">
-                        Lihat dan atur data pengguna yang terdaftar di sistem kamu.
+                        Lihat dan kelola semua data pengguna yang terdaftar dalam sistem.
                     </p>
                     <a href="{{ route('users.index') }}" class="btn btn-success px-4 rounded-pill">
                         <i class="bi bi-arrow-right-circle me-1"></i> Lihat User
@@ -59,11 +72,11 @@
 @endsection
 
 @push('styles')
-<style>
-.hover-shadow:hover {
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-    box-shadow: 0 0.75rem 1.25rem rgba(0,0,0,0.15) !important;
-}
-</style>
+	<style>
+	.hover-shadow:hover {
+		transform: translateY(-5px);
+		transition: all 0.3s ease;
+		box-shadow: 0 0.75rem 1.25rem rgba(0,0,0,0.15) !important;
+	}
+	</style>
 @endpush

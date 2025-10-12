@@ -10,12 +10,27 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-		$users = User::latest()->paginate(5);
+        // Ambil nilai search dan entries (default 5)
+        $search = $request->input('search');
+        $entries = $request->input('entries', 5);
 
-        return view('user.index',[
-			'users' => $users
+        $users = User::query()
+            ->when($request->filled('search'), function ($q) use ($search) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate($entries)
+            ->appends($request->query()); // agar pagination membawa query string
+
+        return view('user.index', [
+			'users' => $users,
+			'search' => $search,
+			'entries' => $entries,
 		]);
     }
 
@@ -24,9 +39,7 @@ class UserController extends Controller
      */
     public function create()
     {
-		return view('user.create');
-
-
+        return view('user.create');
     }
 
     /**
@@ -34,61 +47,64 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'role' => 'required|string|in:1,2',
+            'username' => 'required|string|unique:users,username',
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email',
+                'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/',
+            ],
+            'password' => 'nullable|min:4',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
-		//validasi
-		$validated = $request->validate([
-			'role' => 'required|string|in:1,2',
-			'username' => 'required|string|unique:users,username',
-			'name' => 'required|string |max:255',
-			'email' => 'required|email|unique:users,email',
-			'password' => 'nullable|min:4|',
-			'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 		],[
 
-			//custom message role
-			'role.required' => 'Role harus diisi.',
+			// Role
+			'role.required' => 'Role wajib dipilih.',
+			'role.in' => 'Role tidak valid. Pilih antara Admin atau User.',
 
-			// custom message username
-			'username.required' => 'Username harus diisi.',
-			'username.string' => 'Username harus berupa kata.',
-			'username.unique' => 'Username sudah terdaftar.',
+			// Username
+			'username.required' => 'Username wajib diisi.',
+			'username.unique' => 'Username sudah digunakan.',
 
-				// custom message name
-			'name.required' => 'Nama harus diisi.',
-			'name.string' => 'Nama harus berupa kata.',
-			'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+			// Name
+			'name.required' => 'Nama wajib diisi.',
 
-			// custom message email
-			'email.required' => 'Email harus diisi.',
-			'email.email' => 'Email harus berupa alamat email yang valid.',
+			// Email
+			'email.required' => 'Email wajib diisi.',
+			'email.email' => 'Format email tidak valid.',
 			'email.unique' => 'Email sudah terdaftar.',
 
-			// custom message password
+			// Password
 			'password.min' => 'Password minimal 4 karakter.',
 
-			// custom message photo
-			'photo.image' => 'Dokumen seharusnya berupa gambar.',
-			'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg.',
-			'photo.max' => 'ukuran gambar maksimal 2 MB.',
-		]);
-		$photoName = null;
-		if ($request->hasFile('photo')) {
-			$photoName = time().'.'.$request->photo->extension();
-			$request->photo->move(public_path('photos'), $photoName);
-		}
-		//store
-		$users = User::create([
-			'role' => $validated['role'],
-			'username' => $validated['username'],
-			'name' => $validated['name'],
-			'email' => $validated['email'],
-			'password' => bcrypt($validated['password']),
-			'photo' => $photoName,
+			// Image
+			'photo.image' => 'File harus berupa gambar.',
+			'photo.mimes' => 'Gambar hanya boleh berekstensi: jpeg, png, jpg',
+			'photo.max' => 'Ukuran gambar maksimal 2MB.',
+        ]);
 
-		]);
-		return redirect()->route('users.index')->with('success','Data user berhasil ditambahkan');
+        // Upload foto jika ada
+        $photoName = null;
+        if ($request->hasFile('photo')) {
+            $photoName = time() . '.' . $request->photo->extension();
+            $request->photo->move(public_path('photos'), $photoName);
+        }
 
+        // Simpan data user
+        User::create([
+            'role' => $validated['role'],
+            'username' => $validated['username'],
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => bcrypt($validated['password']),
+            'photo' => $photoName,
+        ]);
 
+        return redirect()->route('users.index')->with('success', 'Data user berhasil ditambahkan');
     }
 
     /**
@@ -96,14 +112,16 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-		return view('user.show', compact('user'));
+       return view('user.show', [
+		'user' => $user
+		]);
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(User $user)
-	//route menggunakan model binding
     {
         return view('user.edit', [
 			'user' => $user
@@ -113,90 +131,88 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-		public function update(Request $request, User $user)
-			//route menggunakan model binding
-		{
+    public function update(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'role' => 'required|string|in:1,2',
+            'username' => 'required|string|unique:users,username,' . $user->id,
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email,' . $user->id,
+                'regex:/^[^@\s]+@[^@\s]+\.[^@\s]+$/',
+            ],
+            'password' => 'nullable|min:4',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+		],[
 
-			$validated = $request->validate([
-				'role' => 'required|string|in:1,2',
-				'username' => 'required|string|unique:users,username,' . $user->id,
-				'name' => 'required|string|max:255',
-				'email' => 'required|email|unique:users,email,' . $user->id,
-				'password' => 'nullable|min:4',
-				'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-			],[
+			// Role
+			'role.required' => 'Role wajib dipilih.',
+			'role.in' => 'Role tidak valid. Pilih antara Admin atau User.',
 
-			//custom message role
-			'role.required' => 'Role harus diisi.',
+			// Username
+			'username.required' => 'Username wajib diisi.',
+			'username.unique' => 'Username sudah digunakan.',
 
-			// custom message username
-			'username.required' => 'Username harus diisi.',
-			'username.string' => 'Username harus berupa kata.',
-			'username.unique' => 'Username sudah terdaftar.',
+			// Name
+			'name.required' => 'Nama wajib diisi.',
 
-			// custom message name
-			'name.required' => 'Nama harus diisi.',
-			'name.string' => 'Nama harus berupa kata.',
-			'name.max' => 'Nama tidak boleh lebih dari 255 karakter.',
-
-			// custom message email
-			'email.required' => 'Email harus diisi.',
-			'email.email' => 'Email harus berupa alamat email yang valid.',
+			// Email
+			'email.required' => 'Email wajib diisi.',
+			'email.email' => 'Format email tidak valid.',
 			'email.unique' => 'Email sudah terdaftar.',
 
-			// custom message password
+			// Password
 			'password.min' => 'Password minimal 4 karakter.',
 
-			// custom message photo
-			'photo.image' => 'Dokumen seharusnya berupa gambar.',
-			'photo.mimes' => 'tipe dokumen yang dapat diinput: jpeg, png, jpg',
-			'photo.max' => 'ukuran gambar maksimal 2 MB.',
-			]);
+			// Image
+			'photo.image' => 'File harus berupa gambar.',
+			'photo.mimes' => 'Gambar hanya boleh berekstensi: jpeg, png, jpg',
+			'photo.max' => 'Ukuran gambar maksimal 2MB.',
 
-			if ($request->hasFile('photo')) {
-				// Hapus foto lama jika ada
-				if (!empty($user->photo)) {
-					$oldImage = public_path('photos/' . $user->photo);
-					if (file_exists($oldImage)) {
-						unlink($oldImage);
-					}
-				}
+        ]);
 
-				// Simpan foto baru
-				$photoName = time() . '.' . $request->photo->extension();
-				$request->photo->move(public_path('photos'), $photoName);
+        // Update foto jika ada file baru
+        if ($request->hasFile('photo')) {
+            if (!empty($user->photo)) {
+                $oldImage = public_path('photos/' . $user->photo);
+                if (file_exists($oldImage)) {
+                    unlink($oldImage);
+                }
+            }
 
-				// Update kolom photo
-				$user->photo = $photoName;
-			}
+            $photoName = time() . '.' . $request->photo->extension();
+            $request->photo->move(public_path('photos'), $photoName);
+            $user->photo = $photoName;
+        }
 
-			//update
-			$user->role = $validated['role'];
-			$user->username = $validated['username'];
-			$user->name = $validated['name'];
-			$user->email = $validated['email'];
+        // Update data lain
+        $user->role = $validated['role'];
+        $user->username = $validated['username'];
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
 
-			if (!empty($validated['password'])) {
-				$user->password = bcrypt($validated['password']);
-			}
+        if (!empty($validated['password'])) {
+            $user->password = bcrypt($validated['password']);
+        }
 
-			$user->save();
+        $user->save();
 
-			return redirect()->route('users.index')->with('success', 'Data user berhasil diupdate');
-		}
-
+        return redirect()->route('users.index')->with('success', 'Data user berhasil diupdate');
+    }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
     {
-		$oldImage = public_path('photos/' . $user->photo);
-		if($user->photo && file_exists($oldImage)) {
-			unlink($oldImage);
-		}
+        if ($user->photo && file_exists(public_path('photos/' . $user->photo))) {
+            unlink(public_path('photos/' . $user->photo));
+        }
 
-		$user->delete();
-		return redirect()->route('users.index')->with('success','Data user berhasil dihapus');
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'Data user berhasil dihapus');
     }
 }

@@ -83,27 +83,49 @@ class ProfileController extends Controller
      * Delete the user's account.
      */
     public function destroy(Request $request)
-    {
-        $request->validate([
-            'password' => ['required', 'current-password'],
-        ]);
+	{
+		// Validasi khusus untuk form hapus akun
+		$request->validate([
+			'delete_password' => ['required', 'current_password'],
+		], [
 
-        $user = $request->user();
+			'delete_password.current_password' => 'Password yang kamu masukkan salah.',
+		]);
 
-        // Hapus foto profil
-        if ($user->photo) {
-            $oldImage = public_path('photos/' . $user->photo);
-            if (file_exists($oldImage)) {
-                unlink($oldImage);
-            }
-        }
+		$user = $request->user();
 
-        Auth::logout();
-        $user->delete();
+		// Hapus foto profil jika ada
+		if ($user->photo) {
+			$oldImage = public_path('photos/' . $user->photo);
+			if (file_exists($oldImage)) {
+				unlink($oldImage);
+			}
+		}
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+		// Logout sebelum menghapus akun
+		Auth::logout();
 
-        return Redirect::to('/');
-    }
+		// Hapus akun user
+		$user->delete();
+
+		// Hapus sesi dan token
+		$request->session()->invalidate();
+		$request->session()->regenerateToken();
+
+		return Redirect::to('/')->with('success', 'Akun kamu berhasil dihapus.');
+	}
+
+	public function destroyPhoto(Request $request)
+	{
+		$user = $request->user();
+		$photoPath = public_path('photos/' . $user->photo);
+
+		if ($user->photo && file_exists($photoPath)) {
+			unlink($photoPath);
+			$user->photo = null;
+			$user->save();
+		}
+
+		return back()->with('success', 'Foto profil berhasil dihapus.');
+	}
 }

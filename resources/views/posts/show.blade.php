@@ -7,14 +7,14 @@
     <div class="row justify-content-center">
         <div class="col-lg-10 col-xl-9">
 
-            {{-- Tombol Kembali & Edit --}}
+            <!-- Tombol Kembali & Edit -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <a href="{{ route('posts.index') }}" class="btn btn-secondary">
-                    ← Kembali
+                    Kembali
                 </a>
                 @auth
                     @if (Auth::id() == $post->user_id || Auth::user()->role == 1)
-                        <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-warning text-white">
+                        <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary text-white">
                             Edit
                         </a>
                     @endif
@@ -22,7 +22,7 @@
             </div>
 
             <article class="card border-0 shadow-sm w-100">
-                {{-- Hero Image --}}
+                <!-- Gambar Utama -->
                 @if ($post->image)
                     <img src="{{ asset('images/' . $post->image) }}"
                          alt="{{ $post->title }}"
@@ -31,12 +31,12 @@
                 @endif
 
                 <div class="card-body p-4 p-md-5">
-                    {{-- Judul --}}
+                    <!-- Judul -->
                     <h1 class="card-title fw-bold mb-3 fs-3">
                         {{ $post->title }}
                     </h1>
 
-                    {{-- Metadata --}}
+                    <!-- Metadata -->
                     <div class="mb-4 text-muted small d-flex flex-wrap gap-3">
                         <span>
                             <i class="bi bi-person-circle me-1"></i>
@@ -54,7 +54,7 @@
                         </span>
                     </div>
 
-                    {{-- Isi konten --}}
+                    <!-- Isi konten -->
                     <div class="article-content lh-lg fs-6">
                         {!! nl2br(e($post->content)) !!}
                     </div>

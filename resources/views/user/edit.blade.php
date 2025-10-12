@@ -19,39 +19,38 @@
                         @csrf
                         @method('PUT')
 
-						<!-- Field Role -->
-						 <div class="mb-3">
-								<label for="role" class="form-label">Role</label>
-								<select class="form-select" id="role" name="role" required>
-									<option value="1" {{ old('role', $user->role) == 1 ? 'selected' : '' }}>Admin</option>
-									<option value="2" {{ old('role', $user->role) == 2 ? 'selected' : '' }}>User</option>
-								</select>
-								@error('role')
-									<div class="text-danger mt-1">
-										{{ $message }}
-									</div>
-								@enderror
-							</div>
+                        <!-- Field Role -->
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+                            <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
+                                <option value="" disabled>Pilih Role</option>
+                                <option value="1" {{ old('role', $user->role) == 1 ? 'selected' : '' }}>Admin</option>
+                                <option value="2" {{ old('role', $user->role) == 2 ? 'selected' : '' }}>User</option>
+                            </select>
+                            @error('role')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
 
                         <!-- Name -->
                         <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
+                            <label for="name" class="form-label">Nama <span class="text-danger">*</span></label>
                             <input
                                 type="text"
                                 id="name"
                                 name="name"
                                 class="form-control @error('name') is-invalid @enderror"
                                 value="{{ old('name', $user->name) }}"
-                                placeholder="Masukkan nama"
+                                placeholder="Masukkan nama lengkap"
                                 required>
-							@error('name')
-								<div class="text-danger mt-1">{{ $message }}</div>
-							@enderror
+                            @error('name')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <!-- Username -->
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
+                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
                             <input
                                 type="text"
                                 id="username"
@@ -67,14 +66,14 @@
 
                         <!-- Email -->
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input
                                 type="email"
                                 id="email"
                                 name="email"
                                 class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email', $user->email) }}"
-                                placeholder="Masukkan email"
+                                placeholder="Masukkan email aktif"
                                 required>
                             @error('email')
                                 <div class="text-danger mt-1">{{ $message }}</div>
@@ -89,14 +88,14 @@
                                 id="password"
                                 name="password"
                                 class="form-control @error('password') is-invalid @enderror"
-                                placeholder="Masukkan password">
+                                placeholder="Masukkan password baru (opsional)">
                             @error('password')
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
-							<small class="text-danger">Kosongkan jika tidak ingin diubah</small>
+                            <small class="text-danger">Kosongkan jika tidak ingin diubah</small>
                         </div>
 
-                        <!-- Image -->
+                        <!-- Gambar -->
                         <div class="mb-3">
                             <label for="photo" class="form-label">Gambar</label>
                             <input
@@ -108,19 +107,23 @@
                             @error('photo')
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
+
                             @if($user->photo)
                                 <div class="mt-2">
-                                    <img src="{{ asset('photos/' . $user->photo) }}" alt="Preview Gambar" width="100">
+                                    <img src="{{ asset('photos/' . $user->photo) }}" alt="{{ $user->name }}" width="100" class="img-thumbnail">
                                 </div>
                             @endif
                         </div>
 
                         <!-- Tombol -->
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('users.index') }}" class="btn btn-secondary">Batal</a>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
+                            <a href="{{ route('users.index') }}" class="btn btn-secondary">
+                                Batal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Simpan
+                            </button>
                         </div>
-
                     </form>
                 </div>
             </div>

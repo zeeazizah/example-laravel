@@ -5,11 +5,11 @@
 
 @section('title', 'Halaman Post')
 
-@section('header-title', 'Halaman Post')
+@section('header-title', 'Daftar Post')
 
 @section('content')
 
-    {{-- Notifikasi sukses / error --}}
+    <!-- Notifikasi Sukses -->
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -17,14 +17,7 @@
         </div>
     @endif
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    {{-- Form Pencarian --}}
+    <!-- Form Search -->
     <div class="container my-3">
         <form action="{{ route('posts.index') }}" method="GET" class="mb-4">
             <div class="input-group">
@@ -33,20 +26,44 @@
                     class="form-control"
                     placeholder="Cari judul atau penulis..."
                     value="{{ request('search') }}">
-                <button class="btn btn-outline-primary" type="submit">Cari</button>
+                <button class="btn btn-outline-primary bi bi-search" type="submit"></button>
             </div>
         </form>
-    </div>
+
+	   <!-- Hasil Pencarian -->
+		@if(request('search'))
+			<div class="alert alert-info">
+				Hasil pencarian untuk:
+				<strong>"{{ request('search') }}"</strong>
+			</div>
+		@endif
+	</div>
+
 
 	<div class="mb-3 d-flex justify-content-between align-items-center">
-		<h4 class="mb-0">Daftar Post</h4>
 		@auth
-			<a href="{{ route('posts.create') }}" class="btn btn-primary">
-				Tambah Post
+			<!-- Jumlah Entri -->
+			<form action="{{ route('posts.index') }}" method="GET" class="d-flex align-items-center ms-3">
+				<!-- Parameter PEncarian -->
+				<input type="hidden" name="search" value="{{ request('search') }}">
+
+				<label for="entries" class="me-2 text-nowrap">Tampilkan</label>
+				<select name="entries" id="entries" class="form-select w-auto" onchange="this.form.submit()">
+					@foreach ([5, 10, 25, 50] as $size)
+						<option value="{{ $size }}" {{ request('entries', 5) == $size ? 'selected' : '' }}>
+							{{ $size }}
+						</option>
+					@endforeach
+				</select>
+				<span class="ms-2 text-nowrap">entri</span>
+			</form>
+			<a href="{{ route('posts.create') }}" class="btn btn-primary bi bi-plus">
+				Tambah Post Baru
 			</a>
 		@endauth
 	</div>
 
+	<!-- Tabel Data Post -->
     <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover align-middle">
             <thead>
@@ -85,24 +102,23 @@
                             @endif
                         </td>
                         <td class="text-start" style="white-space: nowrap;">
-                            {{-- Tombol Detail --}}
-                            <a href="{{ route('posts.show', $post->id) }}" class="btn btn-info btn-sm me-1">
-                                Detail
+                            <!-- Detail -->
+                            <a href="{{ route('posts.show', $post->id) }}"
+								class="btn btn-info btn-sm me-1 bi bi-eye">
                             </a>
 
-                            {{-- Tombol Edit --}}
-                            <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-warning btn-sm me-1">
-                                Edit
+                            <!-- Edit -->
+                            <a href="{{ route('posts.edit', $post->id) }}"
+								class="btn btn-warning btn-sm me-1 bi bi-pencil-square">
                             </a>
 
-                            {{-- Tombol Hapus --}}
+                            <!-- Hapus -->
                             <form action="{{ route('posts.destroy', $post->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
                                     onclick="return confirm('Yakin ingin hapus post ini?')"
-                                    class="btn btn-danger btn-sm">
-                                    Hapus
+                                    class="btn btn-danger btn-sm bi bi-trash">
                                 </button>
                             </form>
                         </td>
@@ -118,7 +134,7 @@
         </table>
 
         {{-- Pagination --}}
-        <div class="d-flex justify-content-start mt-3">
+        <div class="d-flex justify-content-end mt-3">
             {{ $posts->links('pagination::bootstrap-5') }}
         </div>
     </div>

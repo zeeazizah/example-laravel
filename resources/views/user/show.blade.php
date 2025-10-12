@@ -30,23 +30,19 @@
                         </div>
                     @endif
 
-                    {{-- Nama & Email --}}
+                    <!-- Nama -->
                     <h4 class="fw-bold mb-0">
                         {{ $user->name }}
                         @if ($user->role == 1)
                             <i class="bi bi-patch-check-fill text-primary ms-1" title="Verified"></i>
                         @endif
                     </h4>
-                    <p class="text-muted mb-3">{{ $user->email }}</p>
+
 
                     <hr class="my-4">
 
-                    {{-- Personal Details --}}
+                    <!-- Data lengkap -->
                     <div class="text-start">
-                        <h6 class="fw-bold text-primary mb-3">
-                            <i class="bi bi-person-lines-fill me-2"></i>Personal Details
-                        </h6>
-
                         <div class="table-responsive">
                             <table class="table table-borderless align-middle mb-0">
                                 <tbody>
@@ -90,11 +86,11 @@
                     </div>
 
                     <div class="text-end mt-4">
-                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary me-2">
-                            <i class="bi bi-pencil-square me-1"></i> Edit
+						<a href="{{ route('users.index') }}" class="btn btn-secondary">
+                            <i class="left me-1"></i> Kembali
                         </a>
-                        <a href="{{ route('users.index') }}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary me-2">
+                            <i class=" me-1"></i> Edit
                         </a>
                     </div>
 

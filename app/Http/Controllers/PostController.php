@@ -9,44 +9,49 @@ use Illuminate\Support\Facades\Auth;
 class PostController extends Controller
 {
     public function index(Request $request)
-{
-    // Base query
-    if (Auth::check() && Auth::user()->role == 1) {
-        // Admin: lihat semua post
-        $query = Post::with('user');
-    }
-    else if (Auth::check()) {
-        // User biasa: hanya post miliknya
-        $query = Post::with('user')
-            ->where('user_id', Auth::id());
-    }
-    else {
-        // Guest: hanya post publish
-        $query = Post::with('user')
-            ->where('is_publish', true);
-    }
+	{
 
-	$query->when($request->filled('search'), function ($q) use ($request) {
-		$search = $request->search;
+		// Showing entries
+		$perPage = $request->input('entries', 5);
 
-		$q->where(function ($query) use ($search) {
-			$query->where('title', 'like', "%{$search}%")
-				->orWhereHas('user', function ($user) use ($search) {
-					$user->where('name', 'like', "%{$search}%");
-				});
+		// Base query
+		if (Auth::check() && Auth::user()->role == 1) {
+			// Admin: lihat semua post
+			$query = Post::with('user');
+		}
+		else if (Auth::check()) {
+			// User biasa: hanya post miliknya
+			$query = Post::with('user')
+				->where('user_id', Auth::id());
+		}
+		else {
+			// Guest: hanya post publish
+			$query = Post::with('user')
+				->where('is_publish', true);
+		}
+
+		$query->when($request->filled('search'), function ($q) use ($request) {
+			$search = $request->search;
+
+			$q->where(function ($query) use ($search) {
+				$query->where('title', 'like', "%{$search}%")
+					->orWhereHas('user', function ($user) use ($search) {
+						$user->where('name', 'like', "%{$search}%");
+					});
+			});
 		});
-	});
 
-    // Pagination (admin & user: 10, guest: 9)
-    $perPage = (Auth::check() && Auth::user()->role == 1) || (Auth::check())
-        ? 10 : 9;
-    $posts = $query->latest()->paginate($perPage);
+		// Pagination (admin & user: 5, guest: 9)
+		$perPage = $request->input('entries', (Auth::check() && Auth::user()->role == 1) || (Auth::check()) ? 5 : 9);
 
-    return view('posts.index', [
-        'posts'  => $posts,
-        'search' => $request->search, // supaya input search terisi
-    ]);
-}
+		$posts = $query->latest()->paginate($perPage);
+
+		return view('posts.index', [
+			'posts'   => $posts,
+			'search'  => $request->search,
+			'entries' => $perPage,
+		]);
+	}
 
 
     public function create()
@@ -56,12 +61,32 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title'        => 'required|string|max:255',
-            'content'      => 'required|string',
-            'publish_date' => 'required|date',
-            'image'        => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+		$validated = $request->validate([
+		'title'        => 'required|string|max:255',
+		'content'      => 'required|string',
+		'publish_date' => 'required|date',
+		'image'        => 'required|image|mimes:jpg,jpeg,png|max:2048',
+		], [
+			// Judul
+			'title.required' => 'Judul post wajib diisi.',
+			'title.string'   => 'Judul post harus berupa teks.',
+			'title.max'      => 'Judul post tidak boleh lebih dari 255 karakter.',
+
+			// Konten
+			'content.required' => 'Konten post wajib diisi.',
+			'content.string'   => 'Konten post harus berupa teks.',
+
+			// Tanggal Publish
+			'publish_date.required' => 'Tanggal publish wajib diisi.',
+			'publish_date.date'     => 'Tanggal publish harus berupa format tanggal yang valid.',
+
+			// Gambar
+			'image.required' => 'Gambar post wajib diunggah.',
+			'image.image'    => 'File yang diunggah harus berupa gambar.',
+			'image.mimes'    => 'Format gambar harus jpg, jpeg, atau png.',
+			'image.max'      => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+		]);
+
 
         $photoName = null;
         if ($request->hasFile('image')) {
@@ -92,7 +117,9 @@ class PostController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk melihat post ini.');
         }
 
-        return view('posts.show', compact('post'));
+        return view('posts.show', [
+			'posts' => $post,
+		]);
     }
 
     public function edit(Post $post)
@@ -102,7 +129,9 @@ class PostController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk mengedit post ini.');
         }
 
-        return view('posts.edit', compact('post'));
+        return view('posts.edit', [
+			'posts' => $post,
+		]);
     }
 
     public function update(Request $request, Post $post)
@@ -113,11 +142,30 @@ class PostController extends Controller
         }
 
         $validated = $request->validate([
-            'title'        => 'required|string|max:255',
-            'content'      => 'required|string',
-            'publish_date' => 'required|date',
-            'image'        => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+		'title'        => 'required|string|max:255',
+		'content'      => 'required|string',
+		'publish_date' => 'required|date',
+		'image'        => 'required|image|mimes:jpg,jpeg,png|max:2048',
+		], [
+			// Judul
+			'title.required' => 'Judul post wajib diisi.',
+			'title.string'   => 'Judul post harus berupa teks.',
+			'title.max'      => 'Judul post tidak boleh lebih dari 255 karakter.',
+
+			// Konten
+			'content.required' => 'Konten post wajib diisi.',
+			'content.string'   => 'Konten post harus berupa teks.',
+
+			// Tanggal Publish
+			'publish_date.required' => 'Tanggal publish wajib diisi.',
+			'publish_date.date'     => 'Tanggal publish harus berupa format tanggal yang valid.',
+
+			// Gambar
+			'image.required' => 'Gambar post wajib diunggah.',
+			'image.image'    => 'File yang diunggah harus berupa gambar.',
+			'image.mimes'    => 'Format gambar harus jpg, jpeg, atau png.',
+			'image.max'      => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+		]);
 
        if ($request->hasFile('image')) {
 			if (!empty($post->image)) {
@@ -183,7 +231,7 @@ class PostController extends Controller
 			});
 		});
 
-		$posts = $query->latest()->paginate(10);
+		$posts = $query->latest()->paginate(6);
 
 		return view('public.posts.index', [
 			'posts'  => $posts,
@@ -191,16 +239,15 @@ class PostController extends Controller
 		]);
 	}
 
-    public function publicShow($id)
-    {
-        $post = Post::with('user')->findOrFail($id);
+	public function publicShow($id)
+	{
+		$post = Post::with('user')->findOrFail($id);
 
-        if (!$post->is_publish) {
-            abort(404);
-        }
+		if (!$post->is_publish) {
+			abort(404);
+		}
 
-        return view('public.posts.show', compact('post'));
-    }
-
+		return view('public.posts.show', compact('post')); // bukan 'posts'
+	}
 
 }

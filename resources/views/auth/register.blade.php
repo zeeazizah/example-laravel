@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Admin Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="{{asset('bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
 
@@ -19,7 +21,7 @@
 
                 <!-- Username -->
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
+                    <label for="username" class="form-label">Username<span class="text-danger">*</span></label>
                     <input id="username"
                            type="text"
                            name="username"
@@ -33,7 +35,7 @@
 
                 <!-- Name -->
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nama Lengkap</label>
+                    <label for="name" class="form-label">Nama Lengkap<span class="text-danger">*</span></label>
                     <input id="name"
                            type="text"
                            name="name"
@@ -47,7 +49,7 @@
 
                 <!-- Email -->
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
+                    <label for="email" class="form-label">Email<span class="text-danger">*</span></label>
                     <input id="email"
                            type="email"
                            name="email"
@@ -76,7 +78,7 @@
 
                 <!-- Password -->
                 <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">Password<span class="text-danger">*</span></label>
                     <input id="password"
                            type="password"
                            name="password"
@@ -89,12 +91,13 @@
 
                 <!-- Confirm Password -->
                 <div class="mb-4">
-                    <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                    <label for="password_confirmation" class="form-label">Konfirmasi Password<span class="text-danger">*</span></label>
                     <input id="password_confirmation"
                            type="password"
                            name="password_confirmation"
                            class="form-control"
                            required>
+					<small class="text-secondary">Pastikan konfirmasi password sama</small>
                 </div>
 
                 <div class="d-grid mb-2">

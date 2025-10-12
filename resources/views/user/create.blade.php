@@ -22,97 +22,91 @@
 
 							<!-- Field Role -->
 							<div class="mb-3">
-								<label for="role" class="form-label">Role</label>
-								<select class="form-select" id="role" name="role" required>
+								<label for="role" class="form-label">Role <span class="text-danger">*</span></label>
+								<select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
+									<option value="" disabled selected>Pilih Role</option>
 									<option value="1" {{ old('role') == 1 ? 'selected' : '' }}>Admin</option>
 									<option value="2" {{ old('role') == 2 ? 'selected' : '' }}>User</option>
 								</select>
 								@error('role')
-									<div class="text-danger mt-1">
-										{{ $message }}
-									</div>
+									<div class="text-danger mt-1">{{ $message }}</div>
 								@enderror
 							</div>
 
-							<!-- Field Judul -->
+							<!-- Field Name -->
 							<div class="mb-3">
-								<label for="user" class="form-label">Name</label>
+								<label for="name" class="form-label">Nama <span class="text-danger">*</span></label>
 								<input
 									type="text"
 									id="name"
 									name="name"
-									class="form-control"
+									class="form-control @error('name') is-invalid @enderror"
 									value="{{ old('name') }}"
-									placeholder="Masukkan nama"
+									placeholder="Masukkan nama lengkap"
 									required>
 								@error('name')
-									<div class="text-danger mt-1">
-										{{ $message }}
-									</div>
+									<div class="text-danger mt-1">{{ $message }}</div>
 								@enderror
 							</div>
 
+							<!-- Field Username -->
 							<div class="mb-3">
-								<label for="username" class="form-label">Username</label>
+								<label for="username" class="form-label">Username <span class="text-danger">*</span></label>
 								<input
 									type="text"
 									id="username"
 									name="username"
 									class="form-control @error('username') is-invalid @enderror"
 									value="{{ old('username') }}"
-									placeholder="Masukkan Nama"
+									placeholder="Masukkan username"
 									required>
 								@error('username')
-									<div class="text-danger mt-1">
-										{{ $message }}
-									</div>
+									<div class="text-danger mt-1">{{ $message }}</div>
 								@enderror
 							</div>
 
+							<!-- Field Email -->
 							<div class="mb-3">
-								<label for="email" class="form-label">Email</label>
+								<label for="email" class="form-label">Email <span class="text-danger">*</span></label>
 								<input
 									type="email"
 									id="email"
 									name="email"
 									class="form-control @error('email') is-invalid @enderror"
 									value="{{ old('email') }}"
-									placeholder="Masukkan Email"
+									placeholder="Masukkan email aktif"
 									required>
 								@error('email')
-									<div class="text-danger mt-1">
-										{{ $message}}
-									</div>
+									<div class="text-danger mt-1">{{ $message }}</div>
 								@enderror
 							</div>
 
+							<!-- Field Password -->
 							<div class="mb-3">
-								<label for="password" class="form-label">Password</label>
+								<label for="password" class="form-label">Password <span class="text-danger">*</span></label>
 								<input
 									type="password"
 									id="password"
 									name="password"
 									class="form-control @error('password') is-invalid @enderror"
-									placeholder="Masukkan password"
+									placeholder="Masukkan password minimal 4 karakter"
 									required>
 								@error('password')
-									<div class="text-danger mt-1">
-										{{ $message }}
-									</div>
+									<div class="text-danger mt-1">{{ $message }}</div>
 								@enderror
 							</div>
 
+							<!-- Field Photo -->
 							<div class="mb-3">
 								<label for="photo" class="form-label">Gambar</label>
 								<input
 									type="file"
 									id="photo"
 									name="photo"
-									class="form-control @error('photo') is-invalid @enderror">
+									class="form-control @error('photo') is-invalid @enderror"
+									accept="image/*">
 								@error('photo')
-									<div class="text-danger mt-1">
-										{{ $message }}
-									</div>
+									<div class="text-danger mt-1">{{ $message }}</div>
 								@enderror
 							</div>
 

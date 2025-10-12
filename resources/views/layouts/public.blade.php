@@ -6,10 +6,10 @@
     <title>@yield('title', 'Post')</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ asset('bootstrap-icons/font/bootstrap-icons.css') }}" rel="stylesheet">
 
     @stack('styles')
 </head>
@@ -37,32 +37,11 @@
                             </a>
                         </li>
                     @else
-                        {{-- Jika sudah login --}}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                @if(Auth::user()->photo)
-                                    <img src="{{ asset('photos/' . Auth::user()->photo) }}"
-                                         alt="Profile Photo" class="rounded-circle me-2" width="30" height="30">
-                                @else
-                                    <i class="bi bi-person-circle me-2 fs-5"></i>
-                                @endif
-                                {{ Auth::user()->name }}
+                        {{-- Jika sudah login, tombol Dashboard putih --}}
+                        <li class="nav-item">
+                            <a href="{{ route('dashboard') }}" class="btn btn-light text-primary fw-semibold ms-2 d-flex align-items-center">
+                                <i class="me-1"></i> Dashboard
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">
-                                    <i class="bi bi-gear me-2"></i> Edit Profile
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i> Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
                         </li>
                     @endguest
                 </ul>
