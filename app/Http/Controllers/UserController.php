@@ -77,6 +77,7 @@ class UserController extends Controller
 			'email.required' => 'Email wajib diisi.',
 			'email.email' => 'Format email tidak valid.',
 			'email.unique' => 'Email sudah terdaftar.',
+			'email.regex' => 'Email harus memiliki domain valid (contoh: user@mail.com).',
 
 			// Password
 			'password.min' => 'Password minimal 4 karakter.',
@@ -162,6 +163,7 @@ class UserController extends Controller
 			'email.required' => 'Email wajib diisi.',
 			'email.email' => 'Format email tidak valid.',
 			'email.unique' => 'Email sudah terdaftar.',
+			'email.regex' => 'Email harus memiliki domain valid (contoh: user@mail.com).',
 
 			// Password
 			'password.min' => 'Password minimal 4 karakter.',

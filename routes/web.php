@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 	Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
-
+	
 });
 
 
@@ -57,6 +57,6 @@ Route::middleware('auth')->group(function () {
 
 
 // ==========================================
-// Route Autentikasi (Breeze/Fortify/Jetstream)
+// Route Autentikasi (Breeze)
 // ==========================================
 require __DIR__ . '/auth.php';

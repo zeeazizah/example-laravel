@@ -120,14 +120,16 @@
 					<form method="POST" action="{{ route('profile.destroy') }}">
 						@csrf
 						@method('DELETE')
-
 						<div class="mb-3">
 							<label for="password_delete" class="form-label">Password</label>
-							<input type="password"
+							<input
+								type="password"
 								class="form-control @error('delete_password') is-invalid @enderror"
 								id="password_delete"
 								name="delete_password"
-								placeholder="Masukkan password Anda">
+								placeholder="Masukkan password Anda"
+								required
+							>
 							@error('delete_password')
 								<div class="invalid-feedback">{{ $message }}</div>
 							@enderror

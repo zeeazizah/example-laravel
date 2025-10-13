@@ -89,6 +89,7 @@ class ProfileController extends Controller
 			'delete_password' => ['required', 'current_password'],
 		], [
 
+			'delete_password.required' => 'Password Wajib diisi',
 			'delete_password.current_password' => 'Password yang kamu masukkan salah.',
 		]);
 
@@ -112,7 +113,7 @@ class ProfileController extends Controller
 		$request->session()->invalidate();
 		$request->session()->regenerateToken();
 
-		return Redirect::to('/')->with('success', 'Akun kamu berhasil dihapus.');
+		return Redirect::to('/login')->with('success', 'Akun kamu berhasil dihapus.');
 	}
 
 	public function destroyPhoto(Request $request)
